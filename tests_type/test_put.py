@@ -1,0 +1,84 @@
+import requests
+from pydantic import ValidationError
+from pet_schema import Pet 
+
+PET_SERVICE_URL = 'http://5.181.109.28:9090/api/v3'
+    
+def test_update_pet_information(create_and_delete_pet):
+
+    UPDATE_ID = create_and_delete_pet["id"]
+    
+    new_info_pet = {
+        "id": UPDATE_ID,
+        "name": "Cat",
+        "status": "sold",
+        "category": {
+            "id": 1,
+            "name": "dogs"
+        },
+        "tags": [
+            {
+                "id": 1,
+                "name": "vip"
+            }
+        ],
+        "photoUrls": ["https://i.ytimg.com/vi/vPPx29Co0vk/maxresdefault.jpg"]
+    }
+
+
+    update_response = requests.put(f'{PET_SERVICE_URL}/pet', json=new_info_pet)
+    assert update_response.status_code == 200
+
+    get_response = requests.get(f'{PET_SERVICE_URL}/pet/{UPDATE_ID}')
+    assert get_response.status_code == 200
+    updated_data = get_response.json()
+
+    try:
+        validated_pet = Pet(**updated_data)
+    except ValidationError as expect:
+        assert False
+
+
+    assert validated_pet.name == new_info_pet["name"]
+    assert validated_pet.status == new_info_pet["status"]
+    assert validated_pet.category.id == new_info_pet["category"]["id"]
+    assert validated_pet.category.name == new_info_pet["category"]["name"]
+    assert len(validated_pet.tags) == len(new_info_pet["tags"])
+    assert validated_pet.tags[0].id == new_info_pet["tags"][0]["id"]
+    assert validated_pet.tags[0].name == new_info_pet["tags"][0]["name"]    
+
+def test_pet_not_found():
+
+    new_info_pet = {
+        "id": 80,
+        "name": "Cat",
+        "status": "sold",
+    }
+
+    update_response = requests.put(f'{PET_SERVICE_URL}/not_pet', json=new_info_pet)    
+
+    assert update_response.status_code == 404
+
+def test_invalid_id_pet():
+
+    new_info_pet = {
+        "id": 'BC',
+        "name": "Cat",
+        "status": "sold",
+    }
+
+    update_response = requests.put(f'{PET_SERVICE_URL}/pet', json=new_info_pet)    
+
+    assert update_response.status_code == 400
+
+def test_invalid_request():
+
+    new_info_pet = {
+        "id": 80,
+        "name": "Cat",
+        "status": "sold",
+    }
+
+    update_response = requests.patch(f'{PET_SERVICE_URL}/pet', json=new_info_pet)    
+
+    assert update_response.status_code == 405
