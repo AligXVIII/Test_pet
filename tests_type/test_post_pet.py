@@ -17,7 +17,7 @@ def test_create_pet():
     response = requests.post(f'{PET_SERVICE_URL}/pet', json=request_json)
     assert response.status_code == 200
 
-def test_invalid_input_pet():
+def test_try_create_pet_with_invalid_id():
     
     request_json = {
       "id": 'abxc',
