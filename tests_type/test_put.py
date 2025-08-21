@@ -6,10 +6,10 @@ PET_SERVICE_URL = 'http://5.181.109.28:9090/api/v3'
     
 def test_update_pet_information(create_and_delete_pet):
 
-    UPDATE_ID = create_and_delete_pet["id"]
+    ID_OF_THE_UPDATE_PET = create_and_delete_pet["id"]
     
     new_info_pet = {
-        "id": UPDATE_ID,
+        "id": ID_OF_THE_UPDATE_PET,
         "name": "Cat",
         "status": "sold",
         "category": {
@@ -29,7 +29,7 @@ def test_update_pet_information(create_and_delete_pet):
     update_response = requests.put(f'{PET_SERVICE_URL}/pet', json=new_info_pet)
     assert update_response.status_code == 200
 
-    get_response = requests.get(f'{PET_SERVICE_URL}/pet/{UPDATE_ID}')
+    get_response = requests.get(f'{PET_SERVICE_URL}/pet/{ID_OF_THE_UPDATE_PET}')
     assert get_response.status_code == 200
     updated_data = get_response.json()
 
@@ -47,7 +47,7 @@ def test_update_pet_information(create_and_delete_pet):
     assert validated_pet.tags[0].id == new_info_pet["tags"][0]["id"]
     assert validated_pet.tags[0].name == new_info_pet["tags"][0]["name"]    
 
-def test_pet_not_found():
+def test_invalid_specified_path_for_update():
 
     new_info_pet = {
         "id": 80,
@@ -59,7 +59,7 @@ def test_pet_not_found():
 
     assert update_response.status_code == 404
 
-def test_invalid_id_pet():
+def test_failed_update_due_to_an_invalid_pet_ID():
 
     new_info_pet = {
         "id": 'BC',
@@ -71,7 +71,7 @@ def test_invalid_id_pet():
 
     assert update_response.status_code == 400
 
-def test_invalid_request():
+def test_invalid_request_patch():
 
     new_info_pet = {
         "id": 80,
