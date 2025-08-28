@@ -9,7 +9,7 @@ __pycache__/
 # Distribution / packaging
 allure-results/
 allure-report/
-.allure/
+allure/
 .Python
 build/
 develop-eggs/
