@@ -29,8 +29,13 @@ def test_update_pet_information(create_and_delete_pet):
         }
         
         allure.attach(
+            json.dumps(create_and_delete_pet, ensure_ascii=False, indent=2),
+            "Изначальные данные",
+            allure.attachment_type.JSON
+        )
+        allure.attach(
             json.dumps(new_info_pet, ensure_ascii=False, indent=2),
-            "Данные для отправки",
+            "Обновленные данные",
             allure.attachment_type.JSON
         )
     
@@ -39,14 +44,16 @@ def test_update_pet_information(create_and_delete_pet):
         assert update_response.status_code == 200
 
         allure.attach(
-                f"Status: {update_response.status_code}\nBody: {update_response.text}",
+                f"Статус: {update_response.status_code}\n Данные: {update_response.text}",
             "Ответ сервера",
                 allure.attachment_type.TEXT
             )
     
-    get_response = requests.get(f'{PET_SERVICE_URL}/pet/{ID_OF_THE_UPDATE_PET}')
-    assert get_response.status_code == 200
-    updated_data = get_response.json()
+
+    with allure.step("Проверяем,что новый данные можно получить с помощью запроса get"):
+        get_response = requests.get(f'{PET_SERVICE_URL}/pet/{ID_OF_THE_UPDATE_PET}')
+        assert get_response.status_code == 200
+        updated_data = get_response.json()
     
     with allure.step("Сравнить ответ с схемой Pet"):
         try:
@@ -73,7 +80,7 @@ def test_invalid_specified_path_for_update(create_and_delete_pet):
         assert update_response.status_code == 404
     
         allure.attach(
-                f"Status: {update_response.status_code}",
+                f"Статус: {update_response.status_code}",
                "Ответ сервера",
                 allure.attachment_type.TEXT
             )
@@ -100,7 +107,7 @@ def test_failed_update_due_to_an_invalid_pet_ID():
         assert update_response.status_code == 400
 
         allure.attach(
-             f"Status: {update_response.status_code}",
+             f"Статус: {update_response.status_code}",
             "Ответ сервера",
              allure.attachment_type.TEXT
         )
@@ -113,7 +120,7 @@ def test_invalid_request_patch(create_and_delete_pet):
     with allure.step("Получаем статус код о недопустимом HTTP-методе"):
         assert update_response.status_code == 405
         allure.attach(
-             f"Status: {update_response.status_code}",
+             f"Статус: {update_response.status_code}",
             "Ответ сервера",
              allure.attachment_type.TEXT
         )
