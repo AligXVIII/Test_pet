@@ -3,7 +3,7 @@ from faker import Faker
 import json
 import allure
 from pydantic import ValidationError
-from pet_schema import Pet
+from schemes.pet_schema import Pet
 from utils import log_response, log_request 
 
 PET_SERVICE_URL = "http://5.181.109.28:9090/api/v3"
