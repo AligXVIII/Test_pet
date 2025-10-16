@@ -9,9 +9,13 @@ class BasePage:
     def open(self, path: str = ""):
         self.page.goto(f"{self.base_url}/{path}")
 
-    def screenshot(self, path: str = ""):
+
+    def screenshot(self, name: str = "Скриншот"):
         allure.attach(
             self.page.screenshot(),
-            name="Скриншот",
+            name=name,
             attachment_type=allure.attachment_type.PNG
         )
+
+
+    
