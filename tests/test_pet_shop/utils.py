@@ -3,7 +3,6 @@ import json
 import requests
 
 def log_response(response):
-
     method = response.request.method if response.request else "UNKNOWN"
     url = response.request.url if response.request else "UNKNOWN"
 
@@ -20,7 +19,6 @@ def log_response(response):
         "Статус": response.status_code
     }
     
-
     allure.attach(
         json.dumps(log_data, ensure_ascii=False, indent=2),
         "Response log",
@@ -30,14 +28,14 @@ def log_response(response):
     return response
 
 
-def log_request(METHOD,URL,request):
-
-    req = requests.Request(METHOD, URL, json=request)
-    prepared = req.prepare()
-
+def log_request(METHOD, URL, request):
+    
+    temp_req = requests.Request(METHOD, URL, json=request)
+    prepared = temp_req.prepare()
+    
     request_data = {
-        "Метод запроса": prepared.method,
-        "Адрес": prepared.url,
+        "Метод запроса": METHOD,
+        "Адрес": URL,
         "Заголовок запроса": [f"{k}: {v}" for k, v in prepared.headers.items()],
         "Тело запроса": request,
     }
@@ -47,5 +45,3 @@ def log_request(METHOD,URL,request):
         "Request log",
         allure.attachment_type.JSON
     )
-    
-    return prepared
