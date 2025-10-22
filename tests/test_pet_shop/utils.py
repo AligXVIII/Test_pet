@@ -3,6 +3,7 @@ import json
 import requests
 
 def log_response(response):
+    
     method = response.request.method if response.request else "UNKNOWN"
     url = response.request.url if response.request else "UNKNOWN"
 

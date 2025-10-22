@@ -1,6 +1,6 @@
-from tests.test_pet_shop.framework.client.pet_api_client import PetAPIClient
-from tests.test_pet_shop.framework.client.store_api_client import StoreAPIClient
-
+from framework.client.pet_api_client import PetAPIClient
+from framework.client.store_api_client import StoreAPIClient
+from framework.client.user_api_client import UserAPIClient
 
 class APIFactory:
 
@@ -18,4 +18,11 @@ class APIFactory:
     def store(self):
         if self._store is None:
             self._store = StoreAPIClient()
+        return self._store
+
+
+    @property
+    def user(self):
+        if self._store is None:
+            self._store = UserAPIClient()
         return self._store

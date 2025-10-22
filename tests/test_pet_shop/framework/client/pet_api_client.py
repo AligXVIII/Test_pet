@@ -1,10 +1,8 @@
-from tests.test_pet_shop.constants import PET_SERVICE_URL
-from tests.test_pet_shop.framework.client.base_api_client import BaseAPIClient
-from pydantic import ValidationError
+from constants import PET_SERVICE_URL
+from framework.client.base_api_client import BaseAPIClient
 from schemes.pet_schema import Pet
 from utils import log_response,log_request
-from faker import Faker
-import random
+from pydantic import ValidationError
 import allure
 
 
@@ -16,14 +14,14 @@ class PetAPIClient(BaseAPIClient):
 
     @allure.step("Запрос на создание питомца")
     def post_pet(self, pet_data):
-        log_request("POST", f"{PET_SERVICE_URL}/pet", pet_data)
+        log_request("POST", self.url, pet_data)
         response = self.session.post(self.url, json=pet_data)
         log_response(response)
         return response
     
     @allure.step("Запрос на удаление питомца")
     def delete_pet(self, pet_id):
-        log_request("DELETE", f"{PET_SERVICE_URL}/pet", None)
+        log_request("DELETE", self.url, None)
         response = self.session.delete(url=f"{self.url}/{pet_id}")
         log_response(response)
         return response
@@ -39,7 +37,7 @@ class PetAPIClient(BaseAPIClient):
 
     @allure.step("Запрос на обновление питомца")
     def put_pet(self, pet_data):
-        log_request("PUT", f"{PET_SERVICE_URL}/pet", pet_data)
+        log_request("PUT", self.url, pet_data)
         response = self.session.put(self.url, json=pet_data)
         log_response(response)
         return response
@@ -88,39 +86,6 @@ class PetAPIClient(BaseAPIClient):
                 f"Проверка поля {field}",
                 allure.attachment_type.TEXT
             )
-
-
-    @allure.step("Генерация случайного питомца")
-    def generate_test_pet_data(self,pet_id = None,type="valid"):
-        fake = Faker("ru_Ru")
-
-        if pet_id == None:
-            pet_id = random.randint(1, 1000)
-    
-        pet = {
-            "valid": {
-                "id": pet_id,
-                "name": fake.first_name(),
-                "status": fake.random_element(elements=("available", "sold", "pending")),
-                "category": {"id": 1, "name": "dogs"},
-                "tags": [{"id": 1, "name": "vip"}],
-                "photoUrls": ["https://i.ytimg.com/vi/vPPx29Co0vk/maxresdefault.jpg"]
-            },
-
-            "invalid_id": {
-                "id": "abxc",
-                "name": fake.first_name(),
-                "status": fake.random_element(elements=("available", "sold"))
-            },
-            "empty_name": {
-                "id": pet_id,
-                "name": "",
-                "status": "available"
-            }
-        }
-    
-        return pet[type]
-    
 
 
     @allure.step("Валидация ответа по схеме Pet")
