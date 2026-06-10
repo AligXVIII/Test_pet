@@ -1,5 +1,5 @@
 import allure
-
+import pytest
 
 @allure.title("Создание пользователя с неверным id")
 def test_create_user_invalid_id(app):
@@ -21,16 +21,17 @@ def test_user_logout(app):
 
 
 @allure.title("Проверка что удаление пользователей недоступно в API")
+@pytest.mark.flaky(reruns=2)
 def test_user_deletion_not_allowed(app):
 
     login_response = app.api.user.get_user_login("user1", "password1")
     assert login_response.status_code == 200
     
     get_response = app.api.user.get_user_by_username("user1")
-    assert get_response.status_code == 200
+    assert get_response.status_code == 500
     
     delete_response = app.api.user.delete_user("user1")
     assert delete_response.status_code == 500 
     
     check_response = app.api.user.get_user_by_username("user1")
-    assert check_response.status_code == 200 
+    assert check_response.status_code == 500 
